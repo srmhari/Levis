@@ -15,28 +15,28 @@ con <- file(description=input_filename,open="r")
 
 
 sales_data <- tryCatch({
-    read.table(con,sep=delim,nrows=cutoff,quote="\"", fill=TRUE, header=TRUE, na.strings = "#EMPTY", comment.char = "")
-  }, error=function(err) {
-    ## matching condition message only works when message is not translated
-    if (identical(conditionMessage(err), "no lines available in input"))
-      data.frame()
-    else {
-      writeLines(c(err), fileConn)
-	  print(err)
-	  Sys.sleep(2)
-      close(fileConn)
-    }
-  })
+  read.table(con,sep=delim,nrows=cutoff,quote="\"", fill=TRUE, header=TRUE, na.strings = "#EMPTY", comment.char = "")
+}, error=function(err) {
+  ## matching condition message only works when message is not translated
+  if (identical(conditionMessage(err), "no lines available in input"))
+    data.frame()
+  else {
+    writeLines(c(err), fileConn)
+    print(err)
+    Sys.sleep(2)
+    close(fileConn)
+  }
+})
 sales_data_ncols = ncol(sales_data)
 
 header_ncols <- length(header)
 
 if (sales_data_ncols == header_ncols) {
-colnames(sales_data) = header 
+  colnames(sales_data) = header 
 }else if (sales_data_ncols - header_ncols == 2) {
-colnames(sales_data) = c(header,place_holders)
+  colnames(sales_data) = c(header,place_holders)
 }else if (sales_data_ncols - header_ncols == 1) {	
-colnames(sales_data) = c(header,"Place.Holder.1")
+  colnames(sales_data) = c(header,"Place.Holder.1")
 }
 #print colnames(sales_data)
 #sys.sleep(2)
@@ -57,19 +57,19 @@ if (sales_data_ncols != header_ncols){
     }else{
       error_code = -2
       writeLines(c("Columns are arranged in unsuitable way, please give them in correct order"), fileConn)
-	  close(fileConn)
+      close(fileConn)
       stop("Columns are arranged in unsuitable way, please give them in correct order")
     }
   }else {
     error_code = -1
-	writeLines(c("Invalid number of columns, please check your input file"), fileConn)
+    writeLines(c("Invalid number of columns, please check your input file"), fileConn)
     close(fileConn)
     stop("Invalid number of columns, please check your input file")
   }
 } else if(!(all(sales_data_cols == header))){
   if(all(sort(sales_data_cols) == sort(header))){
     error_code = -2
-	writeLines(c("Columns are arranged in unsuitable way, please give them in correct order"), fileConn)
+    writeLines(c("Columns are arranged in unsuitable way, please give them in correct order"), fileConn)
     close(fileConn)
     stop("Columns are arranged in unsuitable way, please give them in correct order")
   }
@@ -105,22 +105,36 @@ stores.count <- c(1:nrows_successcsv)
 #add country at the last of the data frame
 user_option <-data.frame(start.date,end.date,brand,product.category,product.subcategory,consumer.segment,consumer.group,country,place.holder.1, place.holder.2,stores.count)
 user_option[,c(1:ncol(user_option))] <- NA
-x1 <- c()
-x2 <- c()
-x3 <- c()
-x4 <- c()
-x5 <- c()
-x6 <- c()
-x7 <- c()
-x8 <- c()
-x = list(x1,x2,x3,x4,x5,x6,x7,x8)
+#x1 <- c()
+#x2 <- c()
+#x3 <- c()
+#x4 <- c()
+#x5 <- c()
+#x6 <- c()
+#x7 <- c()
+#x8 <- c()
+x = list(c(),
+         c(),
+         c(),
+         c(),
+         c(),
+         c(),
+         c(),
+         c())
+
+
+
+
+
+
+
 if(error_code == 1){
-  x9 <- c()
-  x = append(x,list(x9))
+  #x9 <- c()
+  x = append(x,list(c()))
 }else if(error_code == 2){
-  x9 <- c()
-  x10 <- c()
-  x = append(x,list(x9,x10))
+  #x9 <- c()
+  #x10 <- c()
+  x = append(x,list(c(),c()))
   
 }
 
@@ -128,16 +142,16 @@ distinct_stores <- unique(sales_data[determine_unique_stores])
 door_attributes <- read.csv(door_attr_filename)
 #print nrow(door_attributes)
 repeat{
-
+  
   d1 <- tryCatch({
-		merge(sales_data, door_attributes, by.x = matching_column_sales, by.y = matching_column_door, suffixes = c("","2"), all.x = FALSE, all.y = TRUE)
-		}, error=function(err) {
-		print("Error:")
-		print(err)
-		Sys.sleep(5)
-		writeLines(c(err), fileConn)
-		close(fileConn)
-		})
+    merge(sales_data, door_attributes, by.x = matching_column_sales, by.y = matching_column_door, suffixes = c("","2"), all.x = FALSE, all.y = TRUE)
+  }, error=function(err) {
+    print("Error:")
+    print(err)
+    Sys.sleep(5)
+    writeLines(c(err), fileConn)
+    close(fileConn)
+  })
   print(nrow(d1))
   d2 <- d1[,c(temp_header)]
   df3 <- d2[!duplicated(d2),]
@@ -153,21 +167,21 @@ repeat{
     distinct_stores = rbind(distinct_stores,y)
   }
   
-
-  x[[1]] <- c(x1,levels(factor(sales_data$Brand...SAP.Detail)))
-  x[[2]] <- c(x2,levels(factor(sales_data$Product.Category...Detail)))
-  x[[3]] <- c(x3,levels(factor(sales_data$Product.Subcategory...Detail)))
-  x[[4]] <- c(x4,levels(factor(sales_data$Consumer.Segment...Detail)))
-  x[[5]] <- c(x5,levels(factor(sales_data$Consumer.Group.Extension2...Detail)))
-  x[[6]] <- c(x6,levels(factor(sales_data$Reporting.Period.Fiscal.Year.Week)))
-  x[[7]] <- c(x7,levels(factor(sales_data$Reporting.Period.Fiscal.Year.Week)))
-  x[[8]] <- c(x8,levels(sales_data$Country))
-   
+  
+  x[[1]] <- c(x[[1]],levels(factor(sales_data$Brand...SAP.Detail)))
+  x[[2]] <- c(x[[2]],levels(factor(sales_data$Product.Category...Detail)))
+  x[[3]] <- c(x[[3]],levels(factor(sales_data$Product.Subcategory...Detail)))
+  x[[4]] <- c(x[[4]],levels(factor(sales_data$Consumer.Segment...Detail)))
+  x[[5]] <- c(x[[5]],levels(factor(sales_data$Consumer.Group.Extension2...Detail)))
+  x[[6]] <- c(x[[6]],levels(factor(sales_data$Reporting.Period.Fiscal.Year.Week)))
+  x[[7]] <- c(x[[7]],levels(factor(sales_data$Reporting.Period.Fiscal.Year.Week)))
+  x[[8]] <- c(x[[8]],levels(sales_data$Country))
+  
   if(error_code == 1){
-    x[[9]] <- c(x9,levels(factor(sales_data$Place.Holder.1)))
+    x[[9]] <- c(x[[9]],levels(factor(sales_data$Place.Holder.1)))
   }else if(error_code == 2){
-    x[[9]] <- c(x9,levels(factor(sales_data$Place.Holder.1)))
-    x[[10]] <- c(x10,levels(factor(sales_data$Place.Holder.2)))
+    x[[9]] <- c(x[[9]],levels(factor(sales_data$Place.Holder.1)))
+    x[[10]] <- c(x[[10]],levels(factor(sales_data$Place.Holder.2)))
   }
   
   
