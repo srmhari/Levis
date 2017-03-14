@@ -91,20 +91,7 @@ if (sales_data_ncols == header_ncols){
   perm_header <- c(header,head(place_holders,1))
 }
 
-start.date <- c(1:nrows_successcsv)
-end.date <- c(1:nrows_successcsv)
-brand <- c(1:nrows_successcsv)
-product.category <- c(1:nrows_successcsv)
-product.subcategory <- c(1:nrows_successcsv)
-consumer.segment <- c(1:nrows_successcsv)
-consumer.group <- c(1:nrows_successcsv)
-country <- c(1:nrows_successcsv)
-place.holder.1 <- c(1:nrows_successcsv)
-place.holder.2 <- c(1:nrows_successcsv)
-stores.count <- c(1:nrows_successcsv)
-#add country at the last of the data frame
-user_option <-data.frame(start.date,end.date,brand,product.category,product.subcategory,consumer.segment,consumer.group,country,place.holder.1, place.holder.2,stores.count)
-user_option[,c(1:ncol(user_option))] <- NA
+
 #x1 <- c()
 #x2 <- c()
 #x3 <- c()
@@ -224,66 +211,81 @@ if(error_code == 1){
   x[[10]] <- unique(x[[10]])
 }
 
-len1 <- length(x[[1]])
-len2 <- length(x[[2]])
-len3 <- length(x[[3]])
-len4 <- length(x[[4]])
-len5 <- length(x[[5]])
-len6 <- length(x[[6]])
-len7 <- length(x[[7]])
-len8 <- length(x[[8]])
+len <-list(length(x[[1]]),
+		length(x[[2]]),
+		length(x[[3]]),
+		length(x[[4]]),
+		length(x[[5]]),
+		length(x[[6]]),
+		length(x[[7]]),
+		length(x[[8]]))
 if(error_code == 1){
-  len9 <- length(x[[9]])
+  len <- append(len, list(length(x[[9]])))
 }else if(error_code == 2){
-  len9 <- length(x[[9]])
-  len10 <- length(x[[10]])
+  len <- append(len, list(length(x[[9]]),length(x[[10]])))
 }else{
-  len9 = 0
-  len10 = 0
+  len = append(len, list(0,0))
 }
+
+max_rows = max(unlist(len))
+
+start.date <- c(1:max_rows)
+end.date <- c(1:max_rows)
+brand <- c(1:max_rows)
+product.category <- c(1:max_rows)
+product.subcategory <- c(1:max_rows)
+consumer.segment <- c(1:max_rows)
+consumer.group <- c(1:max_rows)
+country <- c(1:max_rows)
+place.holder.1 <- c(1:max_rows)
+place.holder.2 <- c(1:max_rows)
+stores.count <- c(1:max_rows)
+#add country at the last of the data frame
+user_option <-data.frame(start.date,end.date,brand,product.category,product.subcategory,consumer.segment,consumer.group,country,place.holder.1, place.holder.2,stores.count)
+user_option[,c(1:ncol(user_option))] <- NA
 
 distinct_stores_cnt <- nrow(unique(distinct_stores))
 #brand
-for (i in 1:len1){
+for (i in 1:max(len[[1]])){
   user_option$brand[i] <- x[[1]][i]
 }
 #product category
-for (i in 1:len2){
+for (i in 1:max(len[[2]])){
   user_option$product.category[i] <- x[[2]][i]
 }
 #product subcategory
-for (i in 1:len3){
+for (i in 1:max(len[[3]])){
   user_option$product.subcategory[i] <- x[[3]][i]
 }
 #consumer segment
-for (i in 1:len4){
+for (i in 1:max(len[[4]])){
   user_option$consumer.segment[i] <- x[[4]][i]
 }
 #consumer group
-for (i in 1:len5){
+for (i in 1:max(len[[5]])){
   user_option$consumer.group[i] <- x[[5]][i]
 }
 #start date
-for (i in 1:len6){
+for (i in 1:max(len[[6]])){
   user_option$start.date[i] <- x[[6]][i]
 }
 #end date
-for (i in 1:len7){
+for (i in 1:max(len[[7]])){
   user_option$end.date[i] <- x[[7]][i]
 }
 #country
-for (i in 1:len8){
+for (i in 1:max(len[[8]])){
   user_option$country[i] <- x[[8]][i]
 }
 #placeholder1
-if(len9 > 0){
-  for (i in 1:len9){
+if(max(len[[9]]) > 0){
+  for (i in 1:max(len[[9]])){
     user_option$place.holder.1[i] <- x[[9]][i]
   }
 }
 #placeholder2
-if(len10 > 0){
-  for (i in 1:len10){
+if(max(len[[10]]) > 0){
+  for (i in 1:max(len[[10]])){
     user_option$place.holder.2[i] <- x[[10]][i]
   }
 }
@@ -296,3 +298,4 @@ temp_output_name_path <- paste(workingDir,"temp.csv",sep = "/")
 write.csv(d3,temp_output_name_path,row.names = FALSE)
 writeLines(c("File Splitter ran successfully"), fileConn)
 close(con)
+close(fileConn)
